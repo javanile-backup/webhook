@@ -1,20 +1,15 @@
+## Generic
+.idea/
 vendor/
 node_modules/
 npm-debug.log
+composer.lock
+producer
+producer.log
+repository/
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
-
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-storage/*.key
-.env.*.php
-.env.php
-.env
-Homestead.yaml
-Homestead.json
-
-# Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
-.rocketeer/
+## Webhook
+/manifest.json
+/tasks/
+!tasks/samples
+!tasks/syncme.sh

@@ -1,0 +1,29 @@
+{
+    "name": "javanile/webhook",
+    "description": "Automate your deploy with Webhook",
+    "version": "0.0.2",
+    "license": "MIT",
+    "type": "application",
+    "authors": [
+        {
+            "name": "Francesco Bianco",
+            "email": "bianco@javanile.org"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/javanile/webhook"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Javanile\\Webhook\\": "src/"
+        }
+    },
+    "require": {
+        "ulrichsg/getopt-php": "^3.0",
+        "javanile/producer": "^0.0.18",
+        "javanile/urlman": "^0.0.5"
+    }
+}
