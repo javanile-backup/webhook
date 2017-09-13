@@ -12,6 +12,6 @@ curl \
     -H "Content-Type: application/json" \
     -H "${SIG}" \
     --data "${DATA}" \
-    ${URL}
+    ${URL}?hook=$2
 
 echo ""; echo "--> Done."

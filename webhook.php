@@ -1,12 +1,11 @@
 <?php
 
-$manifest = json_decode(file_get_contents(__DIR__.'/manifest.json'));
+require_once __DIR__.'/vendor/autoload.php';
 
-$input = file_get_contents('php://input');
+use Javanile\Webhook\Endpoint;
 
-$resp = $manifest;
-$resp = $input;
+$manifest = __DIR__.'/manifest.json';
 
+$endpoint = new Endpoint($manifest);
 
-echo json_encode($resp);
-
+echo $endpoint->run();
