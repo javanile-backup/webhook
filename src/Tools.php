@@ -13,9 +13,6 @@ class Tools
 
         $parts = parse_url($url);
 
-
-        var_dump($parts);
-
         return $url.'/webhook.php';
     }
 

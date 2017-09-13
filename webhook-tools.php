@@ -4,8 +4,6 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Javanile\Webhook\Tools as WebhookTools;
 
-var_Dump($argv);
-
 $method = $argv[1];
 
 $webhookTools = new WebhookTools();
