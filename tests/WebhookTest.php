@@ -12,8 +12,14 @@ final class WebhookTest extends TestCase
 {
     public function testEndpoint()
     {
-        $endpoint = new WebhookEndpoint(__DIR__.'/samples/manifest1.json');
+        $endpoint = new WebhookEndpoint([
+            'manifest' => __DIR__.'/samples/manifest1.json',
+            'input'    => __DIR__.'/samples/input1.json',
+            'hook'     => 'test',
+        ]);
 
-        $this->assertEquals(0, 0);
+        $output = $endpoint->run();
+
+        $this->assertEquals($output, '{"error":"Manifest without hooks."}');
     }
 }

@@ -12,7 +12,13 @@ class Endpoint extends Manifest
 
     public function __construct($args)
     {
-        parent:__construct($args['manifest']);
+        foreach (['manifest', 'hook', 'input'] as $key) {
+            if (!isset($args[$key])) {
+                throw new \Exception("Argument required '{$key}'.");
+            }
+        }
+
+        parent::__construct($args['manifest']);
 
         $this->hook = $args['hook'];
         $this->input = $args['input'];
