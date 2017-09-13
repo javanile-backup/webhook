@@ -1,7 +1,7 @@
 {
     "name": "javanile/webhook",
     "description": "Automate your deploy with Webhook",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "MIT",
     "type": "application",
     "authors": [
@@ -22,7 +22,6 @@
         }
     },
     "require": {
-        "ulrichsg/getopt-php": "^3.0",
         "javanile/producer": "^0.0.18",
         "javanile/urlman": "^0.0.5"
     }
