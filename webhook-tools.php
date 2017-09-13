@@ -20,7 +20,10 @@ $methodsMap = [
 ];
 
 if (!isset($methodsMap[$method])) {
-    die();
+    exit();
 }
 
-echo call_user_func_array([$webhookTools, $methodsMap[$method]], array_slice($argv, 2));
+echo call_user_func_array(
+    [$webhookTools, $methodsMap[$method]],
+    array_slice($argv, 2)
+);
