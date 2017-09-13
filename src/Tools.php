@@ -63,4 +63,13 @@ class Tools extends Manifest
         return $url.'/webhook.php';
     }
 
+    public function getRemoteData()
+    {
+        $data = [
+            "ref" => "refs/heads/master",
+        ];
+
+        return json_encode($data);
+    }
+
 }

@@ -15,7 +15,8 @@ $methodsMap = [
     'cron-done' => 'runCronDone',
 
     //
-    'remote-url' => 'getRemoteUrl',
+    'remote-url'  => 'getRemoteUrl',
+    'remote-data' => 'getRemoteData',
 ];
 
 if (!isset($methodsMap[$method])) {
