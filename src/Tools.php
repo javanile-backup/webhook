@@ -4,11 +4,11 @@
  *
  * PHP version 5
  *
- * @category   ProducerCommand
+ * @category ProducerCommand
  *
- * @author     Francesco Bianco <bianco@javanile.org>
- * @license    https://goo.gl/KPZ2qI  MIT License
- * @copyright  2015-2017 Javanile.org
+ * @author    Francesco Bianco <bianco@javanile.org>
+ * @copyright 2015-2017 Javanile.org
+ * @license   https://goo.gl/KPZ2qI  MIT License
  */
 
 namespace Javanile\Webhook;
@@ -17,6 +17,11 @@ use Yalesov\CronExprParser\Parser;
 
 class Tools extends Manifest
 {
+    /**
+     * Run cron init.
+     *
+     * @return
+     */
     public function runCronInit()
     {
         $manifest = $this->loadManifest();
@@ -36,6 +41,11 @@ class Tools extends Manifest
         }
     }
 
+    /**
+     * Get next once task.
+     *
+     * @return string task
+     */
     public function runCronFeed()
     {
         $manifest = $this->loadManifest();
@@ -57,6 +67,9 @@ class Tools extends Manifest
         return $task;
     }
 
+    /**
+     * Close a cron.
+     */
     public function runCronDone()
     {
         $manifest = $this->loadManifest();

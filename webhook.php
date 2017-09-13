@@ -4,11 +4,12 @@
  *
  * PHP version 5
  *
+ * @category CommandLine
+ *
  * @author    Francesco Bianco <bianco@javanile.org>
  * @copyright 2015-2017 Javanile.org
  * @license   https://goo.gl/KPZ2qI  MIT License
  */
-
 require_once __DIR__.'/vendor/autoload.php';
 
 use Javanile\Webhook\Endpoint as WebhookEndpoint;
