@@ -57,7 +57,7 @@ class Endpoint extends Manifest
         $resp = $manifest;
         $resp = $input;
 
-        #echo $input['ref'];
+        //echo $input['ref'];
 
         return json_encode($manifest['once']);
     }

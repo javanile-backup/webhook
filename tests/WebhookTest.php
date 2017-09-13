@@ -3,8 +3,8 @@
 namespace Javanile\Webhook\Tests;
 
 use Javanile\Producer;
-use PHPUnit\Framework\TestCase;
 use Javanile\Webhook\Endpoint as WebhookEndpoint;
+use PHPUnit\Framework\TestCase;
 
 Producer::addPsr4(['Javanile\\Webhook\\Tests\\' => __DIR__]);
 
