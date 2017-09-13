@@ -55,14 +55,20 @@ class Tools extends Manifest
         $this->saveManifest($manifest);
     }
 
+    /**
+     * Get remote url for call webhook.
+     */
     public function getRemoteUrl($url)
     {
 
-        $parts = parse_url($url);
+        //$parts = parse_url($url);
 
         return $url.'/webhook.php';
     }
 
+    /**
+     * Get remote data for call webhook.
+     */
     public function getRemoteData()
     {
         $data = [
