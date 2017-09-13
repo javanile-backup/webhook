@@ -1,7 +1,8 @@
 <?php
 /**
- * Class MainPrivateApplication
+ * Class MainPrivateApplication.
  */
+
 namespace Javanile\Webhook;
 
 class Endpoint extends Manifest
@@ -48,7 +49,7 @@ class Endpoint extends Manifest
         $resp = $manifest;
         $resp = $input;
 
-        #echo $input['ref'];
+        //echo $input['ref'];
 
         return json_encode($manifest['once']);
     }

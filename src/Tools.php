@@ -1,7 +1,8 @@
 <?php
 /**
- * Class MainPrivateApplication
+ * Class MainPrivateApplication.
  */
+
 namespace Javanile\Webhook;
 
 use Yalesov\CronExprParser\Parser;
@@ -57,6 +58,8 @@ class Tools extends Manifest
 
     /**
      * Get remote url for call webhook.
+     *
+     * @param mixed $url
      */
     public function getRemoteUrl($url)
     {
@@ -72,10 +75,9 @@ class Tools extends Manifest
     public function getRemoteData()
     {
         $data = [
-            "ref" => "refs/heads/master",
+            'ref' => 'refs/heads/master',
         ];
 
         return json_encode($data);
     }
-
 }
