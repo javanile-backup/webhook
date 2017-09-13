@@ -12,7 +12,7 @@ engines:
     enabled: true
     config:
       file_extensions: "php"
-      standard: "PSR1,PSR2,Squiz"
+      standard: "PSR1,PSR2,Zend"
       ignore_warnings: false
   phpmd:
     enabled: true
