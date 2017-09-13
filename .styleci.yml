@@ -2,6 +2,5 @@ preset: recommended
 
 enabled:
 - phpdoc_add_missing_param_annotation
-- phpdoc_order
 - phpdoc_var_without_name
 #- void_return  # PHP 7 only
