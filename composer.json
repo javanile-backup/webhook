@@ -1,7 +1,7 @@
 {
     "name": "javanile/webhook",
     "description": "Automate your deploy with Webhook",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "license": "MIT",
     "type": "application",
     "authors": [
@@ -23,6 +23,7 @@
     },
     "require": {
         "javanile/producer": "^0.0.18",
-        "javanile/urlman": "^0.0.5"
+        "javanile/urlman": "^0.0.5",
+        "yalesov/cron-expr-parser": "^2.0"
     }
 }

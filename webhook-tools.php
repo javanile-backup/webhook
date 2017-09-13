@@ -6,10 +6,16 @@ use Javanile\Webhook\Tools as WebhookTools;
 
 $method = $argv[1];
 
-$webhookTools = new WebhookTools();
+$webhookTools = new WebhookTools(__DIR__.'/manifest.json');
 
 $methodsMap = [
-    'remote-url' => 'getRemoteUrl'
+    //
+    'cron-init' => 'runCronInit',
+    'cron-feed' => 'runCronFeed',
+    'cron-done' => 'runCronDone',
+
+    //
+    'remote-url' => 'getRemoteUrl',
 ];
 
 if (!isset($methodsMap[$method])) {

@@ -4,9 +4,56 @@
  */
 namespace Javanile\Webhook;
 
-class Tools
-{
+use Yalesov\CronExprParser\Parser;
 
+class Tools extends Manifest
+{
+    public function runCronInit()
+    {
+        $manifest = $this->loadManifest();
+        $needsave = false;
+
+        foreach ($manifest['cron'] as $cron) {
+            $time = $cron['time'];
+            if (Parser::matchTime('now', $time)) {
+                $needsave = true;
+                $task = $cron['task'];
+                $manifest['once'][] = $task;
+            }
+        }
+
+        if ($needsave) {
+            $this->saveManifest($manifest);
+        }
+    }
+
+    public function runCronFeed()
+    {
+        $manifest = $this->loadManifest();
+
+        if (!isset($manifest['once']) || !$manifest['once']) {
+            return;
+        }
+
+        $task = array_pop($manifest['once']);
+
+        if (!$manifest['once']) {
+            unset($manifest['once']);
+        }
+
+        $manifest['skip'][] = $task;
+
+        $this->saveManifest($manifest);
+
+        return $task;
+    }
+
+    public function runCronDone()
+    {
+        $manifest = $this->loadManifest();
+        unset($manifest['skip']);
+        $this->saveManifest($manifest);
+    }
 
     public function getRemoteUrl($url)
     {

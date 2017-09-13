@@ -1,21 +1,21 @@
 {
-  "name": "webhook-manifest"
-  "path": "."
+  "name": "webhook-manifest",
+  "path": ".",
   "hook": [
     {
-      "name": "update-"
+      "name": "update-",
       "task": ""
     }
   ],
   "cron": [
     {
-      "time": "* * * * *"
+      "time": "* * * * *",
       "task": ""
     }
   ],
   "once": [
-
-  ]
+    "ls"
+  ],
   "skip": [
 
   ]
