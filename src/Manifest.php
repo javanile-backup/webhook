@@ -1,7 +1,16 @@
 <?php
 /**
- * Class MainPrivateApplication
+ * Mount command for producer.
+ *
+ * PHP version 5
+ *
+ * @category   ProducerCommand
+ *
+ * @author     Francesco Bianco <bianco@javanile.org>
+ * @license    https://goo.gl/KPZ2qI  MIT License
+ * @copyright  2015-2017 Javanile.org
  */
+
 namespace Javanile\Webhook;
 
 class Manifest
@@ -40,7 +49,7 @@ class Manifest
             case JSON_ERROR_NONE:
                 return array(
                     "status" => 0,
-                    "value" => $decoded_array
+                    "value" => '',
                 );
 
             case JSON_ERROR_DEPTH:

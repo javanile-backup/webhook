@@ -1,7 +1,7 @@
 {
     "name": "javanile/webhook",
     "description": "Automate your deploy with Webhook",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "license": "MIT",
     "type": "application",
     "authors": [
