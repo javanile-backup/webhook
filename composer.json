@@ -1,7 +1,7 @@
 {
     "name": "javanile/webhook",
     "description": "Automate your deploy with Webhook",
-    "version": "0.0.21",
+    "version": "0.0.22",
     "license": "MIT",
     "type": "application",
     "authors": [
@@ -28,7 +28,8 @@
     },
     "require": {
         "javanile/urlman": "^0.0.5",
-        "yalesov/cron-expr-parser": "^2.0"
+        "yalesov/cron-expr-parser": "^2.0",
+        "squizlabs/php_codesniffer": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",

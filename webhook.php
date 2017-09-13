@@ -1,4 +1,14 @@
 <?php
+/**
+ * Command line tool for vendor code.
+ *
+ * PHP version 5
+ *
+ * @category  CommandLine
+ * @author    Francesco Bianco <bianco@javanile.org>
+ * @license   https://goo.gl/KPZ2qI  MIT License
+ * @copyright 2015-2017 Javanile.org
+ */
 
 require_once __DIR__.'/vendor/autoload.php';
 
