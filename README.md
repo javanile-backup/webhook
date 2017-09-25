@@ -6,5 +6,13 @@
 [![Test Coverage](https://codeclimate.com/github/javanile-bot/webhook/badges/coverage.svg)](https://codeclimate.com/github/javanile-bot/webhook/coverage)
 
 
+Install on Ubuntu/Debian
+
+```
+$ curl -sL https://rawgit.com/javanile/webhook/master/setup.sh | bash -
+```
+
+
+
 
 ./trigger.sh localhost/webhook test
