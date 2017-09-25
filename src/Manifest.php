@@ -20,6 +20,7 @@ class Manifest
     public function __construct($manifest = null)
     {
         $this->manifest = realpath($manifest);
+        $this->basePath = dirname($this->manifest);
     }
 
     public function loadManifest()

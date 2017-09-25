@@ -10,6 +10,10 @@
  * @copyright 2015-2017 Javanile.org
  * @license   https://goo.gl/KPZ2qI  MIT License
  */
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
 require_once __DIR__.'/vendor/autoload.php';
 
 use Javanile\Webhook\Endpoint as WebhookEndpoint;

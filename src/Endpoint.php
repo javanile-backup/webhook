@@ -13,12 +13,29 @@
 
 namespace Javanile\Webhook;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class Endpoint extends Manifest
 {
+    /**
+     *
+     */
     protected $hook;
 
+    /**
+     *
+     */
     protected $input;
 
+    /**
+     *
+     */
+    protected $cronLog;
+
+    /**
+     *
+     */
     public function __construct($args)
     {
         foreach (['manifest', 'hook', 'input'] as $key) {
@@ -31,14 +48,25 @@ class Endpoint extends Manifest
 
         $this->hook = $args['hook'];
         $this->input = $args['input'];
+
+        $accessLogFile = $this->basePath.'/logs/access.log';
+        $this->accessLog = new Logger('ACCESS');
+        $this->accessLog->pushHandler(new StreamHandler($accessLogFile, Logger::INFO));
     }
 
+    /**
+     *
+     */
     public function run()
     {
+        $this->accessLog->info($_SERVER['REQUEST_URI']);
+
+        //
         if (!$this->hook) {
             return $this->error('Missing hook.');
         }
 
+        //
         $manifest = $this->loadManifest();
         if (!isset($manifest['hook']) || !$manifest['hook']) {
             return $this->error('Manifest without hooks.');
@@ -46,22 +74,27 @@ class Endpoint extends Manifest
             return $this->error("Undefined hook '{$this->hook}'.");
         }
 
-        $task = $manifest['hook'][$this->hook]['task'];
+        // Add to ONCE requested task or exec
+        foreach ($manifest['hook'][$this->hook] as $key => $value) {
+            if ($key == 'task') {
+                $task = './tasks/'.$value;
+                $manifest['once'][] = $task;
+            } elseif ($key == 'exec') {
+                $task = $value;
+                $manifest['once'][] = $task;
+            }
+        }
 
-        $manifest['once'][] = $task;
-
+        //
         $manifest['once'] = array_unique($manifest['once']);
-
         $this->saveManifest($manifest);
-
-        $resp = $manifest;
-        $resp = $input;
-
-        //echo $input['ref'];
 
         return json_encode($manifest['once']);
     }
 
+    /**
+     *
+     */
     protected function error($message)
     {
         return json_encode(['error' => $message]);

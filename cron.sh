@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd $(dirname "$0")
+
 php webhook-tools.php cron-init
 
 TASK=1
