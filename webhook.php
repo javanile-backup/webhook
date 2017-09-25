@@ -16,12 +16,11 @@ use Javanile\Webhook\Endpoint as WebhookEndpoint;
 
 $manifest = __DIR__.'/manifest.json';
 
-$endpoint = new WebhookEndpoint(
-    [
+$endpoint = new WebhookEndpoint([
+    'logs'     => __DIR__.'/logs',
     'manifest' => $manifest,
     'input'    => 'php://input',
     'hook'     => filter_input(INPUT_GET, 'hook'),
-    ]
-);
+]);
 
 echo $endpoint->run();
