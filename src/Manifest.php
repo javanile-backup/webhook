@@ -13,23 +13,59 @@
 
 namespace Javanile\Webhook;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class Manifest
 {
+    /**
+     *
+     */
     protected $manifest;
 
+    /**
+     *
+     */
+    protected $errorLog;
+
+    /**
+     *
+     */
     public function __construct($manifest = null)
     {
         $this->manifest = realpath($manifest);
         $this->basePath = dirname($this->manifest);
+
+        $errorLogFile = $this->basePath.'/logs/error.log';
+        $this->errorLog = new Logger('CRON');
+        $this->errorLog->pushHandler(new StreamHandler($errorLogFile, Logger::INFO));
     }
 
+    /**
+     *
+     */
     public function loadManifest()
     {
-        return json_decode(file_get_contents($this->manifest), true);
+        $manifest = json_decode(file_get_contents($this->manifest), true);
+
+        if (!$manifest) {
+            $this->errorLog->error('Manifest error: '.$this->getManifestError());
+        }
+
+        return $manifest;
     }
 
+    /**
+     *
+     */
     public function saveManifest($manifest)
     {
+        if (!$manifest) {
+            $this->errorLog->error("Try to save empty manifeset.", debug_backtrace());
+
+            return;
+        }
+
         return file_put_contents(
             $this->manifest,
             json_encode(
@@ -39,55 +75,40 @@ class Manifest
         );
     }
 
+    /**
+     *
+     */
     public function hasManifestError()
     {
         return json_last_error() !== JSON_ERROR_NONE;
     }
 
+    /**
+     *
+     */
     public function getManifestError()
     {
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
-                return [
-                    'status' => 0,
-                    'value'  => '',
-                ];
+                return 'Empty manifest';
 
             case JSON_ERROR_DEPTH:
-                return [
-                    'status' => 1,
-                    'value'  => 'Maximum stack depth exceeded',
-                ];
+                return 'Maximum stack depth exceeded';
 
             case JSON_ERROR_STATE_MISMATCH:
-                return [
-                    'status' => 1,
-                    'value'  => 'Underflow or the modes mismatch',
-                ];
+                return 'Underflow or the modes mismatch';
 
             case JSON_ERROR_CTRL_CHAR:
-                return [
-                    'status' => 1,
-                    'value'  => 'Unexpected control character found',
-                ];
+                return 'Unexpected control character found';
 
             case JSON_ERROR_SYNTAX:
-                return [
-                    'status' => 1,
-                    'value'  => 'Syntax error, malformed JSON',
-                ];
+                return 'Syntax error, malformed JSON';
 
             case JSON_ERROR_UTF8:
-                return [
-                    'status' => 1,
-                    'value'  => 'Malformed UTF-8 characters, possibly incorrectly encoded',
-                ];
+                return 'Malformed UTF-8 characters, possibly incorrectly encoded';
 
             default:
-                return [
-                    'status' => 1,
-                    'value'  => 'Unknown error',
-                ];
+                return 'Unknown error';
         }
     }
 }

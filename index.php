@@ -9,9 +9,11 @@ $manifest = json_decode(file_get_contents(__DIR__.'/manifest.json'), true);
 
 echo '<pre>once: '.@implode(', ', @$manifest['once']).'</pre>';
 
-foreach ($manifest['hook'] as $hook => $task) {
-    $webhook = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?hook=$hook";
-    echo '<pre>'.$webhook.'</pre>';
+if (is_array($manifest['hook'])) {
+    foreach ($manifest['hook'] as $hook => $task) {
+        $webhook = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?hook=$hook";
+        echo '<pre>'.$webhook.'</pre>';
+    }
 }
 
 if (isset($_GET['watch'])) {

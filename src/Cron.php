@@ -43,19 +43,38 @@ class Cron extends Manifest
     {
         $this->cronLog->info('INIT');
 
+        //
         $manifest = $this->loadManifest();
         $needsave = false;
 
+        //
+        if (!is_array($manifest['cron']) || empty($manifest['cron'])) {
+            return;
+        }
+
+        //
         foreach ($manifest['cron'] as $cron) {
+            if (!isset($cron['time'])) {
+                continue;
+            }
             $time = $cron['time'];
             if (Parser::matchTime('now', $time)) {
                 $needsave = true;
-                $task = $cron['task'];
-                $manifest['once'][] = $task;
+                foreach ($cron as $key => $value) {
+                    if ($key == 'task') {
+                        $task = './tasks/'.$value;
+                        $manifest['once'][] = $task;
+                    } elseif ($key == 'exec') {
+                        $task = $value;
+                        $manifest['once'][] = $task;
+                    }
+                }
             }
         }
 
+        //
         if ($needsave) {
+            $manifest['once'] = array_unique($manifest['once']);
             $this->saveManifest($manifest);
         }
     }
@@ -67,13 +86,13 @@ class Cron extends Manifest
     {
         $manifest = $this->loadManifest();
 
-        if (!isset($manifest['once']) || !$manifest['once']) {
+        if (!isset($manifest['once']) || empty($manifest['once'])) {
             return;
         }
 
         $task = array_pop($manifest['once']);
 
-        if (!$manifest['once']) {
+        if (isset($manifest['once']) && empty($manifest['once'])) {
             unset($manifest['once']);
         }
 
@@ -81,7 +100,7 @@ class Cron extends Manifest
 
         $this->saveManifest($manifest);
 
-        $this->cronLog->info('FEED '.($task ? $task : '-- none --'));
+        $this->cronLog->info('FEED '.$task);
 
         return $task;
     }
