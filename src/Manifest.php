@@ -13,29 +13,17 @@
 
 namespace Javanile\Webhook;
 
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class Manifest
 {
-    /**
-     *
-     */
     protected $manifest;
 
-    /**
-     *
-     */
     protected $errorLog;
 
-    /**
-     *
-     */
     protected $eventLog;
 
-    /**
-     *
-     */
     public function __construct($manifest = null)
     {
         $this->basePath = realpath(__DIR__.'/../');
@@ -61,9 +49,6 @@ class Manifest
         $this->manifest = realpath($manifest);
     }
 
-    /**
-     *
-     */
     public function loadManifest()
     {
         $manifest = json_decode(file_get_contents($this->manifest), true);
@@ -75,13 +60,10 @@ class Manifest
         return $manifest;
     }
 
-    /**
-     *
-     */
     public function saveManifest($manifest)
     {
         if (!$manifest) {
-            $this->errorLog->error("Try to save empty manifeset.", debug_backtrace());
+            $this->errorLog->error('Try to save empty manifeset.', debug_backtrace());
 
             return;
         }
@@ -95,17 +77,11 @@ class Manifest
         );
     }
 
-    /**
-     *
-     */
     public function hasManifestError()
     {
         return json_last_error() !== JSON_ERROR_NONE;
     }
 
-    /**
-     *
-     */
     public function getManifestError()
     {
         switch (json_last_error()) {

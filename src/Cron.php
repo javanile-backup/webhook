@@ -13,20 +13,14 @@
 
 namespace Javanile\Webhook;
 
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Yalesov\CronExprParser\Parser;
 
 class Cron extends Manifest
 {
-    /**
-     *
-     */
     protected $cronLog;
 
-    /**
-     *
-     */
     public function __construct($manifest)
     {
         parent::__construct($manifest);
@@ -36,9 +30,6 @@ class Cron extends Manifest
         $this->cronLog->pushHandler(new StreamHandler($cronLogFile, Logger::INFO));
     }
 
-    /**
-     *
-     */
     public function init()
     {
         $this->cronLog->info('INIT');
@@ -79,9 +70,6 @@ class Cron extends Manifest
         }
     }
 
-    /**
-     *
-     */
     public function feed()
     {
         $manifest = $this->loadManifest();
@@ -105,9 +93,6 @@ class Cron extends Manifest
         return $task;
     }
 
-    /**
-     *
-     */
     public function done()
     {
         $this->cronLog->info('DONE');
