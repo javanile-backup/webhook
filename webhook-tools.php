@@ -19,11 +19,11 @@ $method = $argv[1];
 $webhookTools = new WebhookTools(__DIR__.'/manifest.json');
 
 $methodsMap = [
-    //
+    // Cron tools
     'cron-init' => 'runCronInit',
     'cron-feed' => 'runCronFeed',
     'cron-done' => 'runCronDone',
-    //
+    // Remote tools
     'remote-url'  => 'getRemoteUrl',
     'remote-data' => 'getRemoteData',
 ];

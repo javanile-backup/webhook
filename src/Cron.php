@@ -19,17 +19,34 @@ use Yalesov\CronExprParser\Parser;
 
 class Cron extends Manifest
 {
+    /**
+     * Cron moment to match.
+     */
+    protected $now;
+
+    /**
+     * Cron log handler.
+     */
     protected $cronLog;
 
-    public function __construct($manifest)
+    /**
+     * Init as Cron handler.
+     */
+    public function __construct($manifest, $now = 'now')
     {
         parent::__construct($manifest);
 
+        $this->now = $now;
+
+        //
         $cronLogFile = $this->basePath.'/logs/cron.log';
         $this->cronLog = new Logger('CRON');
         $this->cronLog->pushHandler(new StreamHandler($cronLogFile, Logger::INFO));
     }
 
+    /**
+     * Cron session init.
+     */
     public function init()
     {
         $this->cronLog->info('INIT');
@@ -49,7 +66,7 @@ class Cron extends Manifest
                 continue;
             }
             $time = $cron['time'];
-            if (Parser::matchTime('now', $time)) {
+            if (Parser::matchTime($this->now, $time)) {
                 $needsave = true;
                 foreach ($cron as $key => $value) {
                     if ($key == 'task') {
@@ -70,6 +87,9 @@ class Cron extends Manifest
         }
     }
 
+    /**
+     *
+     */
     public function feed()
     {
         $manifest = $this->loadManifest();
@@ -93,6 +113,9 @@ class Cron extends Manifest
         return $task;
     }
 
+    /**
+     *
+     */
     public function done()
     {
         $this->cronLog->info('DONE');
