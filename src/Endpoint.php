@@ -123,23 +123,34 @@ class Endpoint extends Manifest
 
         $manifest = $this->loadManifest();
 
-        echo '<pre>once: '.@implode(', ', @$manifest['once']).'</pre>';
-
+        //
         if (is_array($manifest['hook'])) {
             foreach ($manifest['hook'] as $hook => $task) {
-                $webhook = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?hook=$hook";
+                $host = $_SERVER['HTTP_HOST'];
+                $base = dirname($_SERVER['REQUEST_URI']);
+                $webhook = "http://{$host}/{$base}/webhook.php?hook={$hook}";
                 echo '<pre>'.$webhook.'</pre>';
+            }
+        }
+
+        //
+        if (@$manifest['once']) {
+            echo '<h2>Penging</h2>';
+            foreach ($manifest['once'] as $task) {
+                echo '<pre>'.$task.'</pre>';
             }
         }
 
         //
         $log = $this->basePath.'/logs/'.$this->info.'.log';
         if (file_exists($log)) {
-            echo '<pre>'.$log."\n".file_get_contents($log).'</pre>';
+            echo '<h2>Log: '.$log.'</h2>';
+            echo '<pre>'.file_get_contents($log).'</pre>';
         }
 
         //
-        echo '<style>pre{border:#ccc;background:#eee;padding:5px}</style>';
+        echo '<style>pre{border:#ccc;background:#eee;padding:5px;margin:0 0 10px 0;}</style>';
+        echo '<style>h1{margin:0 0 5px 0;}h2{margin:20px 0 5px 0;}</style>';
         echo '<script>setTimeout("window.location.reload()", 5000);</script>';
     }
 
