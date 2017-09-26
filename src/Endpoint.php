@@ -13,29 +13,17 @@
 
 namespace Javanile\Webhook;
 
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class Endpoint extends Manifest
 {
-    /**
-     *
-     */
     protected $hook;
 
-    /**
-     *
-     */
     protected $input;
 
-    /**
-     *
-     */
     protected $cronLog;
 
-    /**
-     *
-     */
     public function __construct($args)
     {
         foreach (['manifest', 'request', 'payload'] as $key) {
@@ -59,9 +47,6 @@ class Endpoint extends Manifest
         $this->accessLog->pushHandler(new StreamHandler($accessLogFile, Logger::INFO));
     }
 
-    /**
-     *
-     */
     public function run()
     {
         $this->accessLog->info($_SERVER['REQUEST_URI']);
@@ -78,9 +63,6 @@ class Endpoint extends Manifest
         return '<h1>Webhook: Bad request.</h1>';
     }
 
-    /**
-     *
-     */
     public function runHook()
     {
         //
@@ -114,9 +96,6 @@ class Endpoint extends Manifest
         return json_encode($manifest['once']);
     }
 
-    /**
-     *
-     */
     public function runInfo()
     {
         echo '<h1>Webhook: Informations</h1>';
@@ -154,9 +133,6 @@ class Endpoint extends Manifest
         echo '<script>setTimeout("window.location.reload()", 5000);</script>';
     }
 
-    /**
-     *
-     */
     protected function error($message)
     {
         return json_encode(['error' => $message]);

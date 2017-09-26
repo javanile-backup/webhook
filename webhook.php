@@ -16,7 +16,7 @@
  * -------------
  * move webhook.php file in public folder
  * change $_WEBHOOK_PATH to found it.
- * (es. $_WEBHOOK_PATH = '/srv/deploy-tools/webhook';)
+ * (es. $_WEBHOOK_PATH = '/srv/deploy-tools/webhook';).
  */
 $_WEBHOOK_DIR = __DIR__;
 
