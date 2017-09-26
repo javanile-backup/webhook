@@ -90,7 +90,7 @@ class Cron extends Manifest
             return;
         }
 
-        $task = array_pop($manifest['once']);
+        $task = array_shift($manifest['once']);
 
         if (isset($manifest['once']) && empty($manifest['once'])) {
             unset($manifest['once']);

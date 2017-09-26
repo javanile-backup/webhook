@@ -51,7 +51,7 @@ class Endpoint extends Manifest
         $this->payload = $args['payload'];
         $this->client = isset($args['client']) ? $args['client'] : null;
         $this->hook = isset($args['hook']) ? $args['hook'] : null;
-        $this->info = isset($args['info']) ? $args['info'] : null;
+        $this->info = isset($args['info']) ? preg_replace('/[^a-z]/i', '', $args['info']) : 'event';
 
         //
         $accessLogFile = $this->basePath.'/logs/access.log';
@@ -119,6 +119,10 @@ class Endpoint extends Manifest
      */
     public function runInfo()
     {
+        echo '<h1>Webhook: Informations</h1>';
+
+        $manifest = $this->loadManifest();
+
         echo '<pre>once: '.@implode(', ', @$manifest['once']).'</pre>';
 
         if (is_array($manifest['hook'])) {
@@ -128,13 +132,15 @@ class Endpoint extends Manifest
             }
         }
 
-        if (isset($_GET['watch'])) {
-            $logFile = __DIR__.'/logs/'.$_GET['watch'].'.log';
-            echo '<pre>'.file_get_contents($logFile).'</pre>';
-            echo '<script>setTimeout("window.location.reload()", 15000);</script>';
+        //
+        $log = $this->basePath.'/logs/'.$this->info.'.log';
+        if (file_exists($log)) {
+            echo '<pre>'.$log."\n".file_get_contents($log).'</pre>';
         }
 
+        //
         echo '<style>pre{border:#ccc;background:#eee;padding:5px}</style>';
+        echo '<script>setTimeout("window.location.reload()", 5000);</script>';
     }
 
     /**
