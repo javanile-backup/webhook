@@ -38,7 +38,7 @@ class Endpoint extends Manifest
      */
     public function __construct($args)
     {
-        foreach (['manifest', 'hook', 'input'] as $key) {
+        foreach (['manifest', 'request', 'payload'] as $key) {
             if (!isset($args[$key])) {
                 throw new \Exception("Argument required '{$key}'.");
             }
@@ -46,9 +46,14 @@ class Endpoint extends Manifest
 
         parent::__construct($args['manifest']);
 
-        $this->hook = $args['hook'];
-        $this->input = $args['input'];
+        //
+        $this->request = $args['request'];
+        $this->payload = $args['payload'];
+        $this->client = isset($args['client']) ? $args['client'] : null;
+        $this->hook = isset($args['hook']) ? $args['hook'] : null;
+        $this->info = isset($args['info']) ? $args['info'] : null;
 
+        //
         $accessLogFile = $this->basePath.'/logs/access.log';
         $this->accessLog = new Logger('ACCESS');
         $this->accessLog->pushHandler(new StreamHandler($accessLogFile, Logger::INFO));
@@ -61,6 +66,23 @@ class Endpoint extends Manifest
     {
         $this->accessLog->info($_SERVER['REQUEST_URI']);
 
+        switch ($this->request) {
+            case 'POST':
+                return $this->runHook();
+            case 'GET':
+                return $this->runInfo();
+        }
+
+        http_response_code(400);
+
+        return '<h1>Webhook: Bad request.</h1>';
+    }
+
+    /**
+     *
+     */
+    public function runHook()
+    {
         //
         if (!$this->hook) {
             return $this->error('Missing hook.');
@@ -90,6 +112,29 @@ class Endpoint extends Manifest
         $this->saveManifest($manifest);
 
         return json_encode($manifest['once']);
+    }
+
+    /**
+     *
+     */
+    public function runInfo()
+    {
+        echo '<pre>once: '.@implode(', ', @$manifest['once']).'</pre>';
+
+        if (is_array($manifest['hook'])) {
+            foreach ($manifest['hook'] as $hook => $task) {
+                $webhook = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?hook=$hook";
+                echo '<pre>'.$webhook.'</pre>';
+            }
+        }
+
+        if (isset($_GET['watch'])) {
+            $logFile = __DIR__.'/logs/'.$_GET['watch'].'.log';
+            echo '<pre>'.file_get_contents($logFile).'</pre>';
+            echo '<script>setTimeout("window.location.reload()", 15000);</script>';
+        }
+
+        echo '<style>pre{border:#ccc;background:#eee;padding:5px}</style>';
     }
 
     /**

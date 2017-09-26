@@ -31,14 +31,34 @@ class Manifest
     /**
      *
      */
+    protected $eventLog;
+
+    /**
+     *
+     */
     public function __construct($manifest = null)
     {
-        $this->manifest = realpath($manifest);
-        $this->basePath = dirname($this->manifest);
+        $this->basePath = realpath(__DIR__.'/../');
 
+        if (!$manifest) {
+            $manifest = $this->basePath.'/manifest.json';
+        }
+
+        //
         $errorLogFile = $this->basePath.'/logs/error.log';
         $this->errorLog = new Logger('CRON');
         $this->errorLog->pushHandler(new StreamHandler($errorLogFile, Logger::INFO));
+
+        //
+        $eventLogFile = $this->basePath.'/logs/event.log';
+        $this->eventLog = new Logger('EVENT');
+        $this->eventLog->pushHandler(new StreamHandler($eventLogFile, Logger::INFO));
+
+        if (!file_exists($manifest)) {
+            return $this->errorLog->error('Manifest not found: '.$manifest);
+        }
+
+        $this->manifest = realpath($manifest);
     }
 
     /**

@@ -23,9 +23,8 @@ $methodsMap = [
     'cron-init' => 'runCronInit',
     'cron-feed' => 'runCronFeed',
     'cron-done' => 'runCronDone',
-
     //
-    'remote-url'  => 'getRemoteUrl',
+    'remote-url' => 'getRemoteUrl',
     'remote-data' => 'getRemoteData',
 ];
 

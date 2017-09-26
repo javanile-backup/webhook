@@ -54,12 +54,14 @@ class Tools extends Manifest
      *
      * @param mixed $url
      */
-    public function getRemoteUrl($url)
+    public function getRemoteUrl($url = null)
     {
+        if (!$url || $url == 'manifest') {
+            $manifest = $this->loadManifest();
+            $url = isset($manifest['url']) ? $manifest['url'] : 'http://localhost/';
+        }
 
-        //$parts = parse_url($url);
-
-        return $url.'/webhook.php';
+        return rtrim($url, '/').'/webhook.php';
     }
 
     /**
