@@ -84,10 +84,21 @@ class Endpoint extends Manifest
         // Add to ONCE requested task or exec
         foreach ($manifest['hook'][$this->hook] as $key => $value) {
             if ($key == 'task') {
-                $manifest['once'][] = $this->getTaskExec($value);
+                if (is_array($value)) {
+                    foreach ($value as $t) {
+                        $manifest['once'][] = $this->getTaskExec($t);
+                    }
+                } else {
+                    $manifest['once'][] = $this->getTaskExec($value);
+                }
             } elseif ($key == 'exec') {
-                $task = $value;
-                $manifest['once'][] = $task;
+                if (is_array($value)) {
+                    foreach ($value as $t) {
+                        $manifest['once'][] = $value;
+                    }
+                } else {
+                    $manifest['once'][] = $value;
+                }
             }
         }
 
