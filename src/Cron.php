@@ -70,8 +70,7 @@ class Cron extends Manifest
                 $needsave = true;
                 foreach ($cron as $key => $value) {
                     if ($key == 'task') {
-                        $task = './tasks/'.$value;
-                        $manifest['once'][] = $task;
+                        $manifest['once'][] = $this->getTaskExec($value);
                     } elseif ($key == 'exec') {
                         $task = $value;
                         $manifest['once'][] = $task;
@@ -109,6 +108,7 @@ class Cron extends Manifest
         $this->saveManifest($manifest);
 
         $this->cronLog->info('FEED '.$task);
+        $this->eventLog->info("exec '{$task}'");
 
         return $task;
     }

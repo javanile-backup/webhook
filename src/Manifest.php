@@ -107,4 +107,15 @@ class Manifest
                 return 'Unknown error';
         }
     }
+
+    /**
+     *
+     */
+    public function getTaskExec($task)
+    {
+        $file = 'tasks/'.$task;
+        $exec = 'bash '.$file;
+
+        return $exec;
+    }
 }

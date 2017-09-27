@@ -78,11 +78,13 @@ class Endpoint extends Manifest
             return $this->error("Undefined hook '{$this->hook}'.");
         }
 
+        //
+        $this->eventLog->info("ackn '{$this->hook}'");
+
         // Add to ONCE requested task or exec
         foreach ($manifest['hook'][$this->hook] as $key => $value) {
             if ($key == 'task') {
-                $task = './tasks/'.$value;
-                $manifest['once'][] = $task;
+                $manifest['once'][] = $this->getTaskExec($value);
             } elseif ($key == 'exec') {
                 $task = $value;
                 $manifest['once'][] = $task;
