@@ -9,6 +9,7 @@ producer.log
 repository/
 
 ## Webhook
+/logs/*.log
 /manifest.json
 /tasks/
 !tasks/samples
