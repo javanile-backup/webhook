@@ -7,6 +7,7 @@ composer.lock
 producer
 producer.log
 repository/
+phpunit.xml
 
 ## Webhook
 /logs/*.log
