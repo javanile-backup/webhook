@@ -1,17 +1,20 @@
 #!/bin/bash
 
-echo "--> Start: $2"
+WEBHOOK=$(php webhook-tools.php remote-url $1)?hook=$2
+PAYLOAD=$(php webhook-tools.php remote-data $2)
+CONTENT=$(echo Content-Type: application/json)
+XSECRET=$(php webhook-tools.php secret $2)
+XGITHUB=$(echo -n "${PAYLOAD}" \
+    | openssl dgst -sha1 -hmac "%{XSECRET}" \
+    | awk '{print "X-Hub-Signature: sha1="$2}')
 
-SECRET=secret
-DATA=$(php webhook-tools.php remote-data $2)
-URL=$(php webhook-tools.php remote-url $1)
-SIG=$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "%{SECRET}" | awk '{print "X-Hub-Signature: sha1="$2}')
+echo "--> Trigger: $WEBHOOK"
 
 curl \
     -X POST \
-    -H "Content-Type: application/json" \
-    -H "${SIG}" \
-    --data "${DATA}" \
-    ${URL}?hook=$2
+    -H "${CONTENT}" \
+    -H "${XGITHUB}" \
+    --data "${PAYLOAD}" \
+    ${WEBHOOK}
 
 echo ""; echo "--> Done."

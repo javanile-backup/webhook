@@ -13,37 +13,42 @@
 
 namespace Javanile\Webhook;
 
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class Manifest
 {
-    /**
-     *
-     */
     protected $manifest;
 
-    /**
-     *
-     */
     protected $errorLog;
 
-    /**
-     *
-     */
+    protected $eventLog;
+
     public function __construct($manifest = null)
     {
-        $this->manifest = realpath($manifest);
-        $this->basePath = dirname($this->manifest);
+        $this->basePath = realpath(__DIR__.'/../');
 
+        if (!$manifest) {
+            $manifest = $this->basePath.'/manifest.json';
+        }
+
+        //
         $errorLogFile = $this->basePath.'/logs/error.log';
         $this->errorLog = new Logger('CRON');
         $this->errorLog->pushHandler(new StreamHandler($errorLogFile, Logger::INFO));
+
+        //
+        $eventLogFile = $this->basePath.'/logs/event.log';
+        $this->eventLog = new Logger('EVENT');
+        $this->eventLog->pushHandler(new StreamHandler($eventLogFile, Logger::INFO));
+
+        if (!file_exists($manifest)) {
+            return $this->errorLog->error('Manifest not found: '.$manifest);
+        }
+
+        $this->manifest = realpath($manifest);
     }
 
-    /**
-     *
-     */
     public function loadManifest()
     {
         $manifest = json_decode(file_get_contents($this->manifest), true);
@@ -55,13 +60,10 @@ class Manifest
         return $manifest;
     }
 
-    /**
-     *
-     */
     public function saveManifest($manifest)
     {
         if (!$manifest) {
-            $this->errorLog->error("Try to save empty manifeset.", debug_backtrace());
+            $this->errorLog->error('Try to save empty manifeset.', debug_backtrace());
 
             return;
         }
@@ -75,17 +77,11 @@ class Manifest
         );
     }
 
-    /**
-     *
-     */
     public function hasManifestError()
     {
         return json_last_error() !== JSON_ERROR_NONE;
     }
 
-    /**
-     *
-     */
     public function getManifestError()
     {
         switch (json_last_error()) {
@@ -110,5 +106,16 @@ class Manifest
             default:
                 return 'Unknown error';
         }
+    }
+
+    /**
+     *
+     */
+    public function getTaskExec($task)
+    {
+        $file = 'tasks/'.$task;
+        $exec = 'bash '.$file;
+
+        return $exec;
     }
 }

@@ -13,31 +13,39 @@
 
 namespace Javanile\Webhook;
 
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Yalesov\CronExprParser\Parser;
 
 class Cron extends Manifest
 {
     /**
-     *
+     * Cron moment to match.
+     */
+    protected $now;
+
+    /**
+     * Cron log handler.
      */
     protected $cronLog;
 
     /**
-     *
+     * Init as Cron handler.
      */
-    public function __construct($manifest)
+    public function __construct($manifest, $now = 'now')
     {
         parent::__construct($manifest);
 
+        $this->now = $now;
+
+        //
         $cronLogFile = $this->basePath.'/logs/cron.log';
         $this->cronLog = new Logger('CRON');
         $this->cronLog->pushHandler(new StreamHandler($cronLogFile, Logger::INFO));
     }
 
     /**
-     *
+     * Cron session init.
      */
     public function init()
     {
@@ -58,15 +66,25 @@ class Cron extends Manifest
                 continue;
             }
             $time = $cron['time'];
-            if (Parser::matchTime('now', $time)) {
+            if (Parser::matchTime($this->now, $time)) {
                 $needsave = true;
                 foreach ($cron as $key => $value) {
                     if ($key == 'task') {
-                        $task = './tasks/'.$value;
-                        $manifest['once'][] = $task;
+                        if (is_array($value)) {
+                            foreach ($value as $t) {
+                                $manifest['once'][] = $this->getTaskExec($t);
+                            }
+                        } else {
+                            $manifest['once'][] = $this->getTaskExec($value);
+                        }
                     } elseif ($key == 'exec') {
-                        $task = $value;
-                        $manifest['once'][] = $task;
+                        if (is_array($value)) {
+                            foreach ($value as $t) {
+                                $manifest['once'][] = $value;
+                            }
+                        } else {
+                            $manifest['once'][] = $value;
+                        }
                     }
                 }
             }
@@ -90,7 +108,7 @@ class Cron extends Manifest
             return;
         }
 
-        $task = array_pop($manifest['once']);
+        $task = array_shift($manifest['once']);
 
         if (isset($manifest['once']) && empty($manifest['once'])) {
             unset($manifest['once']);
@@ -101,6 +119,7 @@ class Cron extends Manifest
         $this->saveManifest($manifest);
 
         $this->cronLog->info('FEED '.$task);
+        $this->eventLog->info("exec '{$task}'");
 
         return $task;
     }

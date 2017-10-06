@@ -1,0 +1,14 @@
+{
+  "name": "manifest-cron-1",
+  "hook": {
+    "update-webhook": {
+      "task": "syncme.sh"
+    }
+  },
+  "cron": [
+    {
+      "time": "30 2 * * *",
+      "task": "syncme.sh"
+    }
+  ]
+}

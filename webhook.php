@@ -11,20 +11,32 @@
  * @license   https://goo.gl/KPZ2qI  MIT License
  */
 
+/**
+ * Configuration
+ * -------------
+ * move webhook.php file in public folder
+ * change $_WEBHOOK_PATH to found it.
+ * (es. $_WEBHOOK_PATH = '/srv/deploy-tools/webhook';).
+ */
+$_WEBHOOK_DIR = __DIR__;
+
+//
 error_reporting(E_ALL);
 ini_set('display_errors', true);
 
-require_once __DIR__.'/vendor/autoload.php';
+//
+require_once $_WEBHOOK_DIR.'/vendor/autoload.php';
 
 use Javanile\Webhook\Endpoint as WebhookEndpoint;
 
-$manifest = __DIR__.'/manifest.json';
-
 $endpoint = new WebhookEndpoint([
-    'logs'     => __DIR__.'/logs',
-    'manifest' => $manifest,
-    'input'    => 'php://input',
+    'manifest' => $_WEBHOOK_DIR.'/manifest.json',
+    'request'  => $_SERVER['REQUEST_METHOD'],
+    'payload'  => 'php://input',
+    'client'   => filter_input(INPUT_GET, 'client'),
     'hook'     => filter_input(INPUT_GET, 'hook'),
+    'info'     => filter_input(INPUT_GET, 'info'),
+    'logs'     => __DIR__.'/logs',
 ]);
 
 echo $endpoint->run();
