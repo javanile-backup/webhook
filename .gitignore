@@ -12,5 +12,7 @@ repository/
 /logs/*.log
 /manifest.json
 /tasks/
-!tasks/samples/*
+!tasks/.gitkeep
+!tasks/samples/*.sh
+!tasks/samples/.gitkeep
 !tasks/syncme.sh
