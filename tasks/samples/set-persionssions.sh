@@ -9,6 +9,7 @@ GROUP=${2:-$(id -u -n)}
 
 ## Apply permissions
 chown $USER:$GROUP * -R
+chmod 777 logs/*.log
 
 ## Apply executables
 find . -name '*.sh' -type f | xargs chmod +x

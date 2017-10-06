@@ -113,8 +113,8 @@ class Manifest
      */
     public function getTaskExec($task)
     {
-        $file = 'tasks/'.$task;
-        $exec = 'bash '.$file;
+        $file = './tasks/'.$task;
+        $exec = 'chmod +x '.$file.'; '.$file;
 
         return $exec;
     }
