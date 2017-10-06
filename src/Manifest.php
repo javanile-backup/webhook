@@ -32,7 +32,7 @@ class Manifest
             $manifest = $this->basePath.'/manifest.json';
         }
 
-        //
+        // generic error
         $errorLogFile = $this->basePath.'/logs/error.log';
         $this->errorLog = new Logger('CRON');
         $this->errorLog->pushHandler(new StreamHandler($errorLogFile, Logger::INFO));
@@ -117,7 +117,7 @@ class Manifest
             return;
         }
 
-        if (preg_match('/(^[a-z0-9-/]+\.sh)/i', $task, $file)) {
+        if (preg_match('/(^[a-z0-9-\/]+\.sh)/i', $task, $file)) {
             return 'chmod +x tasks/'.$file[1].'; ./tasks/'.$task;
         }
 
