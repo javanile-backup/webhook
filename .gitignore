@@ -12,5 +12,5 @@ repository/
 /logs/*.log
 /manifest.json
 /tasks/
-!tasks/samples
+!tasks/samples/*
 !tasks/syncme.sh
