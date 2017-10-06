@@ -6,8 +6,8 @@ cd $(dirname "$0")
 ## Init cron
 php webhook-tools.php cron-init
 
+## Loop for tasks
 TASK=1
-
 while [ -n "$TASK" ]; do
     TASK=$(php webhook-tools.php cron-feed)
     if [ -n "$TASK" ]; then
@@ -17,4 +17,5 @@ while [ -n "$TASK" ]; do
     fi
 done
 
+## Close cron
 php webhook-tools.php cron-done
