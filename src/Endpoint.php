@@ -118,7 +118,7 @@ class Endpoint extends Manifest
 
         $manifest = $this->loadManifest();
 
-        //
+        // loop each hook
         if (is_array($manifest['hook'])) {
             foreach ($manifest['hook'] as $hook => $task) {
                 $host = $_SERVER['HTTP_HOST'];
