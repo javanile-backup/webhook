@@ -11,7 +11,7 @@ repository/
 ## Webhook
 /logs/*.log
 /manifest.json
-/tasks/
+/tasks/*
 !tasks/.gitkeep
 !tasks/samples/
 !tasks/samples/*.sh
