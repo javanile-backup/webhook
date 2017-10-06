@@ -72,18 +72,28 @@ class Cron extends Manifest
                     if ($key == 'task') {
                         if (is_array($value)) {
                             foreach ($value as $t) {
+                                if (!$t) {
+                                    continue;
+                                }
                                 $manifest['once'][] = $this->getTaskExec($t);
                             }
                         } else {
-                            $manifest['once'][] = $this->getTaskExec($value);
+                            if (!$value) {
+                                $manifest['once'][] = $this->getTaskExec($value);
+                            }
                         }
                     } elseif ($key == 'exec') {
                         if (is_array($value)) {
                             foreach ($value as $t) {
-                                $manifest['once'][] = $value;
+                                if (!$t) {
+                                    continue;
+                                }
+                                $manifest['once'][] = $t;
                             }
                         } else {
-                            $manifest['once'][] = $value;
+                            if (!$value) {
+                                $manifest['once'][] = $value;
+                            }
                         }
                     }
                 }

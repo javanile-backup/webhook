@@ -86,18 +86,28 @@ class Endpoint extends Manifest
             if ($key == 'task') {
                 if (is_array($value)) {
                     foreach ($value as $t) {
+                        if (!$t) {
+                            continue;
+                        }
                         $manifest['once'][] = $this->getTaskExec($t);
                     }
                 } else {
-                    $manifest['once'][] = $this->getTaskExec($value);
+                    if ($value) {
+                        $manifest['once'][] = $this->getTaskExec($value);
+                    }
                 }
             } elseif ($key == 'exec') {
                 if (is_array($value)) {
                     foreach ($value as $t) {
+                        if (!$t) {
+                            continue;
+                        }
                         $manifest['once'][] = $value;
                     }
                 } else {
-                    $manifest['once'][] = $value;
+                    if ($value) {
+                        $manifest['once'][] = $value;
+                    }
                 }
             }
         }
