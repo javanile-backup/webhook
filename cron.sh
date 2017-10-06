@@ -1,7 +1,9 @@
 #!/bin/bash
 
+## Move to cron.sh dircetory
 cd $(dirname "$0")
 
+## Init cron
 php webhook-tools.php cron-init
 
 TASK=1
