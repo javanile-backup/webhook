@@ -109,6 +109,9 @@ class Endpoint extends Manifest
         return json_encode($manifest['once']);
     }
 
+    /**
+     * Run info panel.
+     */
     public function runInfo()
     {
         echo '<h1>Webhook: Informations</h1>';
@@ -119,8 +122,9 @@ class Endpoint extends Manifest
         if (is_array($manifest['hook'])) {
             foreach ($manifest['hook'] as $hook => $task) {
                 $host = $_SERVER['HTTP_HOST'];
-                $base = dirname($_SERVER['REQUEST_URI']);
-                $webhook = "http://{$host}/{$base}/webhook.php?hook={$hook}";
+                $path = trim(dirname($_SERVER['REQUEST_URI']), '/');
+                $base = "http://{$host}/{$path}";
+                $webhook = $base."/webhook.php?hook={$hook}";
                 echo '<pre>'.$webhook.'</pre>';
             }
         }
