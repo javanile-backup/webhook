@@ -13,6 +13,7 @@ repository/
 /manifest.json
 /tasks/
 !tasks/.gitkeep
+!tasks/samples/
 !tasks/samples/*.sh
 !tasks/samples/.gitkeep
 !tasks/syncme.sh
