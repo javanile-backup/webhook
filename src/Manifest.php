@@ -114,7 +114,7 @@ class Manifest
     public function getTaskExec($task)
     {
         if (preg_match('/(^[a-z0-9-]+\.sh)/i', $task, $file)) {
-            return 'chmod +x tasks/'.$file[1].'; ./tasks/'.$file;
+            return 'chmod +x tasks/'.$file[1].'; ./tasks/'.$task;
         }
 
         return './tasks/'.$task;
