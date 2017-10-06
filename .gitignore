@@ -10,7 +10,8 @@ repository/
 phpunit.xml
 
 ## Webhook
-/logs/*.log
+/logs/*
+!logs/.gitkeep
 /manifest.json
 /tasks/*
 !tasks/.gitkeep
