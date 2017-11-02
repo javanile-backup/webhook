@@ -47,7 +47,7 @@ class Cron extends Manifest
     /**
      * Cron session init.
      */
-    public function init()
+    public function runInit()
     {
         $this->cronLog->info('INIT');
 
@@ -110,7 +110,7 @@ class Cron extends Manifest
     /**
      *
      */
-    public function feed()
+    public function runFeed()
     {
         $manifest = $this->loadManifest();
 
@@ -137,9 +137,9 @@ class Cron extends Manifest
     /**
      *
      */
-    public function done()
+    public function runStop()
     {
-        $this->cronLog->info('DONE');
+        $this->cronLog->info('STOP');
         $manifest = $this->loadManifest();
         unset($manifest['skip']);
         $this->saveManifest($manifest);

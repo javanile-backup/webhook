@@ -16,40 +16,6 @@ namespace Javanile\Webhook;
 class Tools extends Manifest
 {
     /**
-     * Run cron init.
-     *
-     * @return
-     */
-    public function runCronInit()
-    {
-        $cron = new Cron($this->manifest);
-
-        $cron->init();
-    }
-
-    /**
-     * Get next once task.
-     *
-     * @return string task
-     */
-    public function runCronFeed()
-    {
-        $cron = new Cron($this->manifest);
-
-        return $cron->feed();
-    }
-
-    /**
-     * Close a cron.
-     */
-    public function runCronDone()
-    {
-        $cron = new Cron($this->manifest);
-
-        return $cron->done();
-    }
-
-    /**
      * Get remote url for call webhook.
      *
      * @param mixed $url

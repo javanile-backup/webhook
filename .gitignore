@@ -12,6 +12,7 @@ phpunit.xml
 ## Webhook
 /logs/*
 !logs/.gitkeep
+/secret.php
 /manifest.json
 /tasks/*
 !tasks/samples/*
