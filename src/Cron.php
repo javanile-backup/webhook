@@ -102,7 +102,8 @@ class Cron extends Manifest
 
         //
         if ($needsave) {
-            $manifest['once'] = array_unique($manifest['once']);
+            $manifest['once'] = count($manifest['once']) > 1
+                ? array_unique($manifest['once']) : $manifest['once'];
             $this->saveManifest($manifest);
         }
     }
@@ -114,7 +115,9 @@ class Cron extends Manifest
     {
         $manifest = $this->loadManifest();
 
-        if (!isset($manifest['once']) || empty($manifest['once'])) {
+        if (!isset($manifest['once'])
+            || empty($manifest['once'])
+            || !is_array($manifest['once'])) {
             return;
         }
 
