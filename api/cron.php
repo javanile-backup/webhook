@@ -10,12 +10,12 @@
  * @copyright 2015-2017 Javanile.org
  * @license   https://goo.gl/KPZ2qI  MIT License
  */
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Javanile\Webhook\Cron as WebhookCron;
 
-$manifest = isset($argv[1]) && $argv[1] ? $argv[1] : die("Error: missing manifest.\n");
-$method   = isset($argv[2]) && $argv[2] ? $argv[2] : die("Error: missing method.\n");
+$method   = isset($argv[1]) && $argv[1] ? $argv[1] : die("Error: missing method.\n");
+$manifest = isset($argv[2]) && $argv[2] ? $argv[2] : die("Error: missing manifest.\n");
 
 $webhookTools = new WebhookCron($manifest);
 
