@@ -1,8 +1,12 @@
 {
     "name": "webhook-manifest",
+    "host": "http://localhost/webhook/webhook.php"
     "hook": {
-        "update-webhook": {
-            "task": "syncme.sh"
+        "webhook-update": {
+            "task": "update.sh"
+        },
+        "test": {
+            "task": ""
         }
     },
     "cron": [

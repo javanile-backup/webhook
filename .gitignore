@@ -1,19 +1,21 @@
 ## Generic
 .idea/
 vendor/
+ndev_modules/
 node_modules/
+repository/
 npm-debug.log
 composer.lock
 producer
 producer.log
-repository/
 phpunit.xml
 
 ## Webhook
-/logs/*
-!logs/.gitkeep
+/log/*
+!log/.gitkeep
 /secret.php
 /manifest.json
-/tasks/*
-!tasks/samples/*
-!tasks/syncme.sh
+/task/*
+!task/samples/*
+!task/update.sh
+!task/test.sh
