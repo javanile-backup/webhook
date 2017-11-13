@@ -1,6 +1,8 @@
 # webhook
 
-[![Made with Bulma](https://bulma.io/images/made-with-bulma.png =128x24)](https://bulma.io)
+<a href="https://bulma.io">
+  <img src="https://bulma.io/images/made-with-bulma.png" alt="Made with Bulma" width="128" height="24">
+</a>
 
 [![StyleCI](https://styleci.io/repos/103394153/shield?branch=master)](https://styleci.io/repos/103394153)
 [![Code Climate](https://codeclimate.com/github/javanile-bot/webhook/badges/gpa.svg)](https://codeclimate.com/github/javanile-bot/webhook)
