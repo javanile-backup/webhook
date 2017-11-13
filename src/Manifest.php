@@ -18,37 +18,50 @@ use Monolog\Logger;
 
 class Manifest
 {
+    /**
+     * @var bool|string
+     */
     protected $manifest;
 
+    /**
+     * @var Logger
+     */
     protected $errorLog;
 
+    /**
+     * @var Logger
+     */
     protected $eventLog;
 
+    /**
+     * Manifest constructor.
+     * @param null $manifest
+     */
     public function __construct($manifest = null)
     {
         $this->basePath = realpath(__DIR__.'/../');
 
+        //
         if (!$manifest) {
             $manifest = $this->basePath.'/manifest.json';
         }
 
         // generic error
-        $errorLogFile = $this->basePath.'/logs/error.log';
-        $this->errorLog = new Logger('CRON');
-        $this->errorLog->pushHandler(new StreamHandler($errorLogFile, Logger::INFO));
+        $this->errorLog = $this->buildLogger('error');
+        $this->eventLog = $this->buildLogger('event');
 
         //
-        $eventLogFile = $this->basePath.'/logs/event.log';
-        $this->eventLog = new Logger('EVENT');
-        $this->eventLog->pushHandler(new StreamHandler($eventLogFile, Logger::INFO));
-
         if (!file_exists($manifest)) {
             return $this->errorLog->error('Manifest not found: '.$manifest);
         }
 
+        //
         $this->manifest = realpath($manifest);
     }
 
+    /**
+     * @return mixed
+     */
     public function loadManifest()
     {
         $manifest = json_decode(file_get_contents($this->manifest), true);
@@ -60,12 +73,14 @@ class Manifest
         return $manifest;
     }
 
+    /**
+     * @param $manifest
+     * @return bool|int|void
+     */
     public function saveManifest($manifest)
     {
         if (!$manifest) {
-            $this->errorLog->error('Try to save empty manifeset.', debug_backtrace());
-
-            return;
+            return $this->errorLog->error('Try to save empty manifeset.', debug_backtrace());
         }
 
         return file_put_contents(
@@ -77,11 +92,17 @@ class Manifest
         );
     }
 
+    /**
+     * @return bool
+     */
     public function hasManifestError()
     {
         return json_last_error() !== JSON_ERROR_NONE;
     }
 
+    /**
+     * @return string
+     */
     public function getManifestError()
     {
         switch (json_last_error()) {
@@ -122,5 +143,19 @@ class Manifest
         }
 
         return './tasks/'.$task;
+    }
+
+    /**
+     *
+     */
+    protected function buildLogger($name, $level = null)
+    {
+        $level = $level !== null ? $level : Logger::INFO;
+
+        $file = $this->basePath.'/log/'.$name.'.log';
+        $logger = new Logger(strtoupper($name));
+        $logger->pushHandler(new StreamHandler($name, $level));
+
+        return $logger;
     }
 }

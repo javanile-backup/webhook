@@ -13,17 +13,44 @@
 
 namespace Javanile\Webhook;
 
+session_start();
+
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 class Endpoint extends Manifest
 {
+    /**
+     * @var null
+     */
     protected $hook;
 
+    /**
+     * @var
+     */
     protected $input;
 
+    /**
+     * @var
+     */
+    protected $secret;
+
+    /**
+     * @var
+     */
+    protected $passwd;
+
+    /**
+     * @var
+     */
     protected $cronLog;
 
+    /**
+     * Endpoint constructor.
+     *
+     * @param null $args
+     * @throws \Exception
+     */
     public function __construct($args)
     {
         foreach (['manifest', 'request', 'payload'] as $key) {
@@ -32,30 +59,52 @@ class Endpoint extends Manifest
             }
         }
 
+        //
         parent::__construct($args['manifest']);
 
         //
+        $this->secret = $args['secret'];
         $this->request = $args['request'];
         $this->payload = $args['payload'];
         $this->client = isset($args['client']) ? $args['client'] : null;
+        $this->passwd = isset($args['passwd']) ? $args['passwd'] : null;
+        $this->login = isset($args['login']) ? $args['login'] : null;
         $this->hook = isset($args['hook']) ? $args['hook'] : null;
         $this->info = isset($args['info']) ? preg_replace('/[^a-z]/i', '', $args['info']) : 'event';
-
-        //
-        $accessLogFile = $this->basePath.'/logs/access.log';
-        $this->accessLog = new Logger('ACCESS');
-        $this->accessLog->pushHandler(new StreamHandler($accessLogFile, Logger::INFO));
+        $this->accessLog = $this->buildLogger('access');
     }
 
+    /**
+     * @return string|void
+     */
     public function run()
     {
+        if ($this->login == 'passwd'
+            && isset($this->secret['webhook_passwd'])
+            && $this->secret['webhook_passwd']
+        ) if ($this->secret['webhook_passwd'] == $this->passwd) {
+            $_SESSION['webhook_sessid'] = md5($this->passwd);
+            return header('Location: webhook.php');
+        } else {
+            return $this->loginForm('Incorrect password.');
+        }
+
         $this->accessLog->info($_SERVER['REQUEST_URI']);
 
-        switch ($this->request) {
-            case 'POST':
-                return $this->runHook();
-            case 'GET':
-                return $this->runInfo();
+        if ($this->request == 'POST') {
+            return $this->runHook();
+        }
+
+        if ($this->request == 'GET') {
+            if (isset($this->secret['webhook_passwd'])
+                && $this->secret['webhook_passwd']
+                && (!isset($_SESSION['webhook_sessid'])
+                    || (md5($this->secret['webhook_passwd']) != $_SESSION['webhook_sessid']))
+            ) {
+                return $this->loginForm();
+            }
+
+            return $this->runInfo();
         }
 
         http_response_code(400);
@@ -63,6 +112,9 @@ class Endpoint extends Manifest
         return '<h1>Webhook: Bad request.</h1>';
     }
 
+    /**
+     * @return string
+     */
     public function runHook()
     {
         //
@@ -157,9 +209,59 @@ class Endpoint extends Manifest
         //
         echo '<style>pre{border:#ccc;background:#eee;padding:5px;margin:0 0 10px 0;}</style>';
         echo '<style>h1{margin:0 0 5px 0;}h2{margin:20px 0 5px 0;}</style>';
-        echo '<script>setTimeout("window.location.reload()", 5000);</script>';
+
+
+        return $this->render("   
+            <!doctype html>
+            <html>
+                <head>
+                    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>                    
+                </head>            
+                <body>       
+
+                    <script>setTimeout(\"window.location.reload()\", 5000);</script>                    
+                </body>
+            </html>
+        ");
     }
 
+    /**
+     * @param $message
+     * @return string
+     */
+    private function loginForm($message = '')
+    {
+        return $this->render("   
+            <!doctype html>
+            <html>
+                <head>
+                    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>
+                </head>            
+                <body>       
+                    <form method='POST' style='text-align:center'>
+                        <label>Enter password</label>
+                        <input type='password' name='passwd'>
+                        <input type='hidden' name='login' value='passwd'>               
+                        <input type='submit' value='Access'>
+                        {$message}
+                    </form>
+                </body>
+            </html>
+        ");
+    }
+
+    /**
+     *
+     */
+    private function render($html)
+    {
+        return trim(preg_replace('~>\s+<~', '><', $html));
+    }
+
+    /**
+     * @param $message
+     * @return string
+     */
     protected function error($message)
     {
         return json_encode(['error' => $message]);
