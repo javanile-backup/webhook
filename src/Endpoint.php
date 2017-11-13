@@ -232,29 +232,50 @@ class Endpoint extends Manifest
     private function loginForm($message = '')
     {
         return $this->render("   
-            <!doctype html>
-            <html>
-                <head>
-                    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>
-                </head>            
-                <body>       
-                    <form method='POST' style='text-align:center'>
-                        <label>Enter password</label>
-                        <input type='password' name='passwd'>
-                        <input type='hidden' name='login' value='passwd'>               
-                        <input type='submit' value='Access'>
-                        {$message}
-                    </form>
-                </body>
-            </html>
+            <section class='is-fullheight'>
+                <div class='hero-body'>
+                    <div class='container has-text-centered'>
+                        <div class='column is-4 is-offset-4'>
+                            <h3 class='title has-text-grey'>webhook</h3>
+                            <p class='subtitle has-text-grey'>Please login to proceed.</p>
+                            <div class='box'>           
+                                <form method='POST' style='text-align:center'>
+                                    {$message}
+                                    <div class='field'>
+                                        <div class='control'>
+                                            <input type='password' class='input' name='passwd' placeholder='Enter password'>
+                                        </div>
+                                        <input type='hidden' name='login' value='passwd'>               
+                                    </div>                              
+                                    <input type='submit' class='button is-info' value='Access'>                            
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         ");
     }
 
     /**
      *
      */
-    private function render($html)
+    private function render($view)
     {
+        $html = '
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>Hello Bulma!</title>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+              </head>
+              <body>'.$view.'</body>
+            </html>
+        ';
+
         return trim(preg_replace('~>\s+<~', '><', $html));
     }
 
