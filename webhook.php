@@ -43,7 +43,7 @@ $endpoint = new WebhookEndpoint([
     'login'    => filter_input(INPUT_POST, 'login'),
     'client'   => filter_input(INPUT_GET, 'client'),
     'hook'     => filter_input(INPUT_GET, 'hook'),
-    'info'     => filter_input(INPUT_GET, 'info'),
+    'page'     => filter_input(INPUT_GET, 'page'),
     'log'      => __DIR__.'/log',
 ]);
 

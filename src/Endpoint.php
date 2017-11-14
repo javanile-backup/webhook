@@ -15,9 +15,6 @@ namespace Javanile\Webhook;
 
 session_start();
 
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-
 class Endpoint extends Manifest
 {
     /**
@@ -71,11 +68,12 @@ class Endpoint extends Manifest
         $this->login = isset($args['login']) ? $args['login'] : null;
         $this->hook = isset($args['hook']) ? $args['hook'] : null;
         $this->info = isset($args['info']) ? preg_replace('/[^a-z]/i', '', $args['info']) : 'event';
+        $this->log = isset($args['log']) ? $args['log'] : 'log';
         $this->accessLog = $this->buildLogger('access');
     }
 
     /**
-     * @return string|void
+     * @return string
      */
     public function run()
     {
@@ -176,9 +174,12 @@ class Endpoint extends Manifest
      */
     public function runInfo()
     {
-        echo '<h1>Webhook: Informations</h1>';
 
         $manifest = $this->loadManifest();
+
+        /*
+
+        echo '<h1>Webhook: Informations</h1>';
 
         // loop each hooks
         if (is_array($manifest['hook'])) {
@@ -193,7 +194,7 @@ class Endpoint extends Manifest
 
         //
         if (@$manifest['once']) {
-            echo '<h2>Penging</h2>';
+            echo '<h2>Pending</h2>';
             foreach ($manifest['once'] as $task) {
                 echo '<pre>'.$task.'</pre>';
             }
@@ -209,74 +210,120 @@ class Endpoint extends Manifest
         //
         echo '<style>pre{border:#ccc;background:#eee;padding:5px;margin:0 0 10px 0;}</style>';
         echo '<style>h1{margin:0 0 5px 0;}h2{margin:20px 0 5px 0;}</style>';
+        */
 
+        $table = '<table class="table is-stripped is-bordered is-fullwidth"><tr><th></th></tr>';
+        foreach ($this->listTaskLogs() as $log) {
+            $table .= '<tr><td><a href="'.$log['name'].'">'.$log['name'].'</a></td></tr>';
+        }
+        $table .= '</table>';
 
-        return $this->render("   
-            <!doctype html>
-            <html>
-                <head>
-                    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>                    
-                </head>            
-                <body>       
-
-                    <script>setTimeout(\"window.location.reload()\", 5000);</script>                    
-                </body>
-            </html>
-        ");
+        return $this->render('webhook', '   
+            <section class="hero is-link">
+                <div class="hero-body" style="padding:10px 0;">
+                    <div class="container">                  
+                        <h1 class="title">
+                            webhook
+                        </h1>
+                    </div>
+                </div>            
+                <div class="hero-foot">
+                    <div class="container">
+                        <nav class="tabs is-boxed">
+                            <ul>
+                                <li class="is-active">
+                                    <a href="?page=home">Overview</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>              
+            </section>
+                        
+            <section class="section" style="padding:20px 0;">
+                <div class="container">'.$table.'</div>
+            </section>                       
+        ');
     }
 
     /**
+     *
+     *
      * @param $message
      * @return string
      */
     private function loginForm($message = '')
     {
-        return $this->render("   
-            <section class='is-fullheight'>
-                <div class='hero-body'>
-                    <div class='container has-text-centered'>
-                        <div class='column is-4 is-offset-4'>
-                            <h3 class='title has-text-grey'>webhook</h3>
-                            <p class='subtitle has-text-grey'>Please login to proceed.</p>
-                            <div class='box'>           
-                                <form method='POST' style='text-align:center'>
-                                    {$message}
-                                    <div class='field'>
-                                        <div class='control'>
-                                            <input type='password' class='input' name='passwd' placeholder='Enter password'>
+        return $this->render('webhook | login', '  
+            <section class="is-fullheight">
+                <div class="hero-body">
+                    <div class="container has-text-centered">
+                        <div class="column is-4 is-offset-4">
+                            <h3 class="title has-text-grey">webhook</h3>
+                            <p class="subtitle has-text-grey">Please login to proceed.</p>
+                            <div class="box">           
+                                <form method="POST" style="text-align:center">
+                                    '.$message.'
+                                    <div class="field">
+                                        <div class="control">
+                                            <input type="password" class="input" name="passwd" placeholder="Enter password">
                                         </div>
-                                        <input type='hidden' name='login' value='passwd'>               
+                                        <input type="hidden" name="login" value="passwd">               
                                     </div>                              
-                                    <input type='submit' class='button is-info' value='Access'>                            
+                                    <input type="submit" class="button is-info" value="Access">                            
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-        ");
+        ');
     }
 
     /**
      *
      */
-    private function render($view)
+    private function render($title, $view)
     {
         $html = '
             <!DOCTYPE html>
             <html>
-              <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Hello Bulma!</title>
-                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
-              </head>
-              <body>'.$view.'</body>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>'.$title.'</title>
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+                </head>
+                <body>'.$view.'</body>
             </html>
         ';
 
         return trim(preg_replace('~>\s+<~', '><', $html));
+    }
+
+    /**
+     *
+     *
+     */
+    function listTaskLogs()
+    {
+        $files = array();
+        $dir = $this->log . '/task';
+
+        foreach (scandir($dir) as $file) {
+            if ($file[0] == '.') { continue; }
+            $info = pathinfo($dir . '/' . $file);
+            $stat = stat($dir . '/' . $file);
+            $files[] = [
+                'name' => $info['filename'],
+            ];
+        }
+
+        //arsort($files);
+        //$files = array_keys($files);
+
+        return $files;
     }
 
     /**
