@@ -77,6 +77,10 @@ class Endpoint extends Manifest
      */
     public function run()
     {
+        if (!$this->checkManifest()) {
+            return $this->error($this->errorManifest);
+        }
+
         if ($this->login == 'passwd'
             && isset($this->secret['webhook_passwd'])
             && $this->secret['webhook_passwd']
@@ -122,11 +126,6 @@ class Endpoint extends Manifest
 
         //
         $manifest = $this->loadManifest();
-        if (!isset($manifest['hook']) || !$manifest['hook']) {
-            return $this->error('Manifest without hooks.');
-        } elseif (!isset($manifest['hook'][$this->hook])) {
-            return $this->error("Undefined hook '{$this->hook}'.");
-        }
 
         //
         $this->eventLog->info("ackn '{$this->hook}'");
@@ -209,7 +208,9 @@ class Endpoint extends Manifest
                     <div class="container">
                         <nav class="tabs is-boxed">
                             <ul>
-                                <li><h1 class="title" style="padding: 3px 20px 3px 3px">webhook</h1></li>
+                                <li>
+                                    <h1 class="title" style="padding: 3px 20px 3px 3px">webhook</h1>
+                                </li>
                                 '.$nav.'
                             </ul>
                         </nav>
@@ -340,12 +341,36 @@ class Endpoint extends Manifest
     }
 
     /**
+     *
+     *
+     */
+    private function checkManifest()
+    {
+        //
+        $manifest = $this->loadManifest();
+        $host = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+
+        //
+        if (!isset($manifest['hook']) || !$manifest['hook']) {
+            return !$this->errorManifest = 'Manifest without hooks.';
+        } elseif (!isset($manifest['host'])) {
+            return !$this->errorManifest = 'Undefined "host" value on manifest.';
+        } elseif (!$manifest['host']) {
+            return !$this->errorManifest = 'Empty "host" value need match with "'.$host.'" on manifest.';
+        } elseif ($manifest['host'] != $host) {
+            return !$this->errorManifest = 'For security reason "host" value need match with "'.$host.'" on manifest.';
+        }
+
+        return true;
+    }
+
+    /**
      * @param $message
      * @return string
      */
     protected function error($message)
     {
-        return json_encode(['error' => $message]);
+        return '<h3>Error: '.$message.'</h3>';
     }
 }
 

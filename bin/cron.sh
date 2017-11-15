@@ -7,12 +7,12 @@ MANIFEST=manifest.json
 cd $(dirname "$0") && cd ..
 
 ## Init cron
-php api/cron.php init $MANIFEST
+php api/cron.php $MANIFEST init
 
 ## Loop for tasks
 TASK=1
 while [ -n "$TASK" ]; do
-    TASK=$(php api/cron.php feed $MANIFEST)
+    TASK=$(php api/cron.php $MANIFEST feed)
     if [ -n "$TASK" ]; then
         ## Run task
         bash -c "$TASK" &> ./logs/task.log 2>&1
@@ -23,4 +23,4 @@ while [ -n "$TASK" ]; do
 done
 
 ## Stop cron
-php api/cron.php stop $MANIFEST
+php api/cron.php $MANIFEST stop

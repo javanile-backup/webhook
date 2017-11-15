@@ -14,10 +14,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Javanile\Webhook\Cron as WebhookCron;
 
-$method   = isset($argv[1]) && $argv[1] ? $argv[1] : die("Error: missing method.\n");
-$manifest = isset($argv[2]) && $argv[2] ? $argv[2] : die("Error: missing manifest.\n");
+$manifest = isset($argv[1]) && $argv[1] ? $argv[1] : die("Error: missing manifest.\n");
+$method   = isset($argv[2]) && $argv[2] ? $argv[2] : die("Error: missing method.\n");
 
-$webhookTools = new WebhookCron($manifest);
+$webhookCron = new WebhookCron($manifest);
 
 $methodsMap = [
     'init' => 'runInit',
@@ -30,6 +30,6 @@ if (!isset($methodsMap[$method])) {
 }
 
 echo call_user_func_array(
-    [$webhookTools, $methodsMap[$method]],
+    [$webhookCron, $methodsMap[$method]],
     array_slice($argv, 2)
 );

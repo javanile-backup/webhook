@@ -10,29 +10,26 @@
  * @copyright 2015-2017 Javanile.org
  * @license   https://goo.gl/KPZ2qI  MIT License
  */
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
-use Javanile\Webhook\Tools as WebhookTools;
+use Javanile\Webhook\Trigger as WebhookTrigger;
 
-$method = $argv[1];
+$manifest = isset($argv[1]) && $argv[1] ? $argv[1] : die("Error: missing manifest.\n");
+$method   = isset($argv[2]) && $argv[2] ? $argv[2] : die("Error: missing method.\n");
 
-$webhookTools = new WebhookTools(__DIR__.'/manifest.json');
+$webhookTrigger = new WebhookTrigger($manifest);
 
 $methodsMap = [
-    // Cron tools
-    'cron-init' => 'runCronInit',
-    'cron-feed' => 'runCronFeed',
-    'cron-done' => 'runCronDone',
     // Remote tools
     'remote-url'  => 'getRemoteUrl',
     'remote-data' => 'getRemoteData',
 ];
 
 if (!isset($methodsMap[$method])) {
-    exit();
+    die("Error: method not valid.\n");
 }
 
 echo call_user_func_array(
-    [$webhookTools, $methodsMap[$method]],
+    [$webhookTrigger, $methodsMap[$method]],
     array_slice($argv, 2)
 );
