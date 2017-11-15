@@ -40,7 +40,7 @@ class Endpoint extends Manifest
     /**
      * @var
      */
-    protected $cronLog;
+    protected $accessLog;
 
     /**
      * Endpoint constructor.
@@ -67,7 +67,7 @@ class Endpoint extends Manifest
         $this->passwd = isset($args['passwd']) ? $args['passwd'] : null;
         $this->login = isset($args['login']) ? $args['login'] : null;
         $this->hook = isset($args['hook']) ? $args['hook'] : null;
-        $this->info = isset($args['info']) ? preg_replace('/[^a-z]/i', '', $args['info']) : 'event';
+        $this->page = isset($args['page']) ? explode(':', preg_replace('/[^a-z:]/i', '', $args['page'])) : ['task'];
         $this->log = isset($args['log']) ? $args['log'] : 'log';
         $this->accessLog = $this->buildLogger('access');
     }
@@ -102,7 +102,7 @@ class Endpoint extends Manifest
                 return $this->loginForm();
             }
 
-            return $this->runInfo();
+            return $this->runPage();
         }
 
         http_response_code(400);
@@ -172,68 +172,45 @@ class Endpoint extends Manifest
     /**
      * Run info panel.
      */
-    public function runInfo()
+    public function runPage()
     {
-
-        $manifest = $this->loadManifest();
-
-        /*
-
-        echo '<h1>Webhook: Informations</h1>';
-
-        // loop each hooks
-        if (is_array($manifest['hook'])) {
-            foreach ($manifest['hook'] as $hook => $task) {
-                $host = $_SERVER['HTTP_HOST'];
-                $path = trim(dirname($_SERVER['REQUEST_URI']), '/');
-                $base = "http://{$host}/{$path}";
-                $webhook = $base."/webhook.php?hook={$hook}";
-                echo '<pre>'.$webhook.'</pre>';
-            }
+        if (!isset($this->page[1]) || !$this->page[1] || $this->page[1] == 'layout') {
+            return $this->renderPageLayout();
+        } else if ($this->page[1] == 'refresh') {
+            return $this->renderPageRefresh();
         }
+    }
 
-        //
-        if (@$manifest['once']) {
-            echo '<h2>Pending</h2>';
-            foreach ($manifest['once'] as $task) {
-                echo '<pre>'.$task.'</pre>';
-            }
+    /**
+     *
+     */
+    private function renderPageLayout()
+    {
+        $this->page[1] = 'refresh';
+        $refresh = '?page='.implode(':', $this->page);
+
+        $pages = [
+            'task'     => 'Task list',
+            'access'   => 'Access log',
+            'error'    => 'Error log',
+            'manifest' => 'Manifest',
+        ];
+
+        $nav = '';
+        foreach ($pages as $current => $label) {
+            $nav .= '<li '.(preg_match('/^'.$current.'/', $this->page[0]) ? 'class="is-active"' : '').'>'
+                 . '<a href="?page='.$current.'">'.$label.'</a></li>';
         }
-
-        //
-        $log = $this->basePath.'/logs/'.$this->info.'.log';
-        if (file_exists($log)) {
-            echo '<h2>Log: '.$log.'</h2>';
-            echo '<pre>'.file_get_contents($log).'</pre>';
-        }
-
-        //
-        echo '<style>pre{border:#ccc;background:#eee;padding:5px;margin:0 0 10px 0;}</style>';
-        echo '<style>h1{margin:0 0 5px 0;}h2{margin:20px 0 5px 0;}</style>';
-        */
-
-        $table = '<table class="table is-stripped is-bordered is-fullwidth"><tr><th></th></tr>';
-        foreach ($this->listTaskLogs() as $log) {
-            $table .= '<tr><td><a href="'.$log['name'].'">'.$log['name'].'</a></td></tr>';
-        }
-        $table .= '</table>';
+        $nav .= '';
 
         return $this->render('webhook', '   
             <section class="hero is-link">
-                <div class="hero-body" style="padding:10px 0;">
-                    <div class="container">                  
-                        <h1 class="title">
-                            webhook
-                        </h1>
-                    </div>
-                </div>            
                 <div class="hero-foot">
                     <div class="container">
                         <nav class="tabs is-boxed">
                             <ul>
-                                <li class="is-active">
-                                    <a href="?page=home">Overview</a>
-                                </li>
+                                <li><h1 class="title" style="padding: 3px 20px 3px 3px">webhook</h1></li>
+                                '.$nav.'
                             </ul>
                         </nav>
                     </div>
@@ -241,9 +218,48 @@ class Endpoint extends Manifest
             </section>
                         
             <section class="section" style="padding:20px 0;">
-                <div class="container">'.$table.'</div>
+                <div data-refresh="'.$refresh.'" class="container"></div>
             </section>                       
         ');
+    }
+
+    /**
+     * @return string
+     */
+    private function renderPageRefresh()
+    {
+        if ($this->page[0] == 'task') {
+            return $this->renderTask();
+        }
+
+        return "-";
+    }
+
+    /**
+     * @return string
+     */
+    private function renderTask()
+    {
+        // return task list table
+        if (!isset($this->page[2]) || !$this->page[2]) {
+            $table = '<table class="table is-striped is-narrow is-fullwidth">'
+                . '<thead><tr><th>Name</th></tr></thead><tbody>';
+            foreach ($this->listTaskLogs() as $log) {
+                $table .= '<tr><td><a href="?page=task:layout:'.$log['name'].'">'.$log['name'].'</a></td></tr>';
+            }
+            $table .= '</tbody></table>';
+
+            return $table;
+        }
+
+        // return single task
+        $log = $this->log.'/task/'.$this->page[2].'.log';
+
+        $output = '<pre>';
+        $output.= file_get_contents($log);
+        $output.= '</pre>';
+
+        return $output;
     }
 
     /**
@@ -255,28 +271,23 @@ class Endpoint extends Manifest
     private function loginForm($message = '')
     {
         return $this->render('webhook | login', '  
-            <section class="is-fullheight">
-                <div class="hero-body">
-                    <div class="container has-text-centered">
-                        <div class="column is-4 is-offset-4">
-                            <h3 class="title has-text-grey">webhook</h3>
-                            <p class="subtitle has-text-grey">Please login to proceed.</p>
-                            <div class="box">           
-                                <form method="POST" style="text-align:center">
-                                    '.$message.'
-                                    <div class="field">
-                                        <div class="control">
-                                            <input type="password" class="input" name="passwd" placeholder="Enter password">
-                                        </div>
-                                        <input type="hidden" name="login" value="passwd">               
-                                    </div>                              
-                                    <input type="submit" class="button is-info" value="Access">                            
-                                </form>
-                            </div>
-                        </div>
+            <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                    <h3 class="title has-text-grey">webhook</h3>
+                    <div class="box">           
+                        <form method="POST" style="text-align:center">
+                            '.$message.'
+                            <div class="field">
+                                <div class="control">
+                                    <input type="password" class="input" name="passwd" placeholder="Enter password">
+                                </div>
+                                <input type="hidden" name="login" value="passwd">               
+                            </div>                              
+                            <input type="submit" class="button is-info" value="Access">                            
+                        </form>
                     </div>
                 </div>
-            </section>
+            </div>
         ');
     }
 
@@ -294,6 +305,8 @@ class Endpoint extends Manifest
                     <title>'.$title.'</title>
                     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                    <script>$(document).ready(function(){$("[data-refresh]").each(function(){var s = $(this);s.load(s.attr("data-refresh"));setInterval(function(){s.load(s.attr("data-refresh"));},5000);})})</script>
                 </head>
                 <body>'.$view.'</body>
             </html>
@@ -335,3 +348,38 @@ class Endpoint extends Manifest
         return json_encode(['error' => $message]);
     }
 }
+
+
+/*
+echo '<h1>Webhook: Informations</h1>';
+
+// loop each hooks
+if (is_array($manifest['hook'])) {
+    foreach ($manifest['hook'] as $hook => $task) {
+        $host = $_SERVER['HTTP_HOST'];
+        $path = trim(dirname($_SERVER['REQUEST_URI']), '/');
+        $base = "http://{$host}/{$path}";
+        $webhook = $base."/webhook.php?hook={$hook}";
+        echo '<pre>'.$webhook.'</pre>';
+    }
+}
+
+//
+if (@$manifest['once']) {
+    echo '<h2>Pending</h2>';
+    foreach ($manifest['once'] as $task) {
+        echo '<pre>'.$task.'</pre>';
+    }
+}
+
+//
+$log = $this->basePath.'/logs/'.$this->info.'.log';
+if (file_exists($log)) {
+    echo '<h2>Log: '.$log.'</h2>';
+    echo '<pre>'.file_get_contents($log).'</pre>';
+}
+
+//
+echo '<style>pre{border:#ccc;background:#eee;padding:5px;margin:0 0 10px 0;}</style>';
+echo '<style>h1{margin:0 0 5px 0;}h2{margin:20px 0 5px 0;}</style>';
+*/
